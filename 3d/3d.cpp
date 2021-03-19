@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "3d.h"
+#include <Windows.h>
 
 #define MAX_LOADSTRING 100
 
@@ -115,106 +116,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 
 
-const float cord[][4] = { {220, 120, 1, 1},
-			{ 20, 120, 1, 0},
-			{ 60, 200, 1, 0},
-			{180, 200, 1, 0},
-			{220, 120, 1, 0},
-			{180, 120, 1, 1},
-			{140, 30, 1, 0},
-			{100, 120, 1, 0},
-			{100, 20, 1, 0},
-			{60, 20, 1, 0},
-			{80, 30, 1, 0},
-			{60, 40, 1, 0},
-			{100, 40, 1, 0} };
-
-float current_cord[][4] = { {220, 120, 1, 1},
-			{ 20, 120, 1, 0},
-			{ 60, 200, 1, 0},
-			{180, 200, 1, 0},
-			{220, 120, 1, 0},
-			{180, 120, 1, 1},
-			{140, 30, 1, 0},
-			{100, 120, 1, 0},
-			{100, 20, 1, 0},
-			{60, 20, 1, 0},
-			{80, 30, 1, 0},
-			{60, 40, 1, 0},
-			{100, 40, 1, 0} };
-
-
-void return_cord(float array[][4]) {
-	int row = 13;
-	int col = 4;
-
-	for (int i = 0; i < row; i++) {
-		for (int j = 0; j < col; j++) {
-			array[i][j] = cord[i][j];
-		}
-	}
-}
-
-void multi_matrix(float array[][4], float affin[3][3]) {
-	int sum = 0;
-	int row = 13;
-	int col = 4;
-
-	float buf[3];
-	for (int i = 0; i < row; i++) {
-		for (int j = 0; j < 3; j++) {
-			for (int c = 0; c < 3; c++) {
-				sum += array[i][c] * affin[c][j];
-			}
-			buf[j] = sum;
-			sum = 0;
-		}
-		for (int h = 0; h < 3; h++) {
-			array[i][h] = buf[h];
-		}
-	}
-}
-
-void paint(HDC hdc, float cord[][4]) {
-	int row = 13;
-	for (int i = 0; i < row; i++) {
-		if (cord[i][3] == 1)
-			MoveToEx(hdc, cord[i][0], cord[i][1], NULL);
-		else
-			LineTo(hdc, cord[i][0], cord[i][1]);
-	}
-}
-
-void move(float array[][4], float m, float n) {
-	float move[3][3] = {
-		{1, 0, 0},
-		{0, 1, 0},
-		{m, n, 1} 
-	};
-
-	multi_matrix(array, move);
-}
-
-void scale(float array[][4], float a, float b) {
-	float scale[3][3] = { 
-		{a, 0, 0},
-		{0, b, 0},
-		{0, 0, 1} 
-	};
-
-	multi_matrix(array, scale);
-}
-
-void reflect(float array[][4]) {
-	float reflect[3][3] = { 
-		{0, 1, 0},
-		{1, 0, 0},
-		{0, 0, 1} 
-	};
-
-	multi_matrix(array, reflect);
-}
-
 //
 //  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -252,19 +153,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case VK_UP:
-			move(current_cord, 1.5, -3);
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case VK_RIGHT:
-			scale(current_cord, 3, 3);
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case VK_LEFT:
-			reflect(current_cord);
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case VK_DOWN:
-			return_cord(current_cord);
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		default:
@@ -276,7 +173,63 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		paint(hdc, current_cord);
+		HBITMAP bg = (HBITMAP)LoadImage(NULL, L"bg.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		HBITMAP sprites[11];
+		sprites[0] = (HBITMAP)LoadImage(NULL, L"1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[1] = (HBITMAP)LoadImage(NULL, L"2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[2] = (HBITMAP)LoadImage(NULL, L"3.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[3] = (HBITMAP)LoadImage(NULL, L"4.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[4] = (HBITMAP)LoadImage(NULL, L"5.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[5] = (HBITMAP)LoadImage(NULL, L"6.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[6] = (HBITMAP)LoadImage(NULL, L"7.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[7] = (HBITMAP)LoadImage(NULL, L"8.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[8] = (HBITMAP)LoadImage(NULL, L"9.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[9] = (HBITMAP)LoadImage(NULL, L"10.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		sprites[10] = (HBITMAP)LoadImage(NULL, L"11.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+		HDC memdec;
+		memdec = CreateCompatibleDC(hdc);
+		SelectObject(memdec, bg);
+		BitBlt(hdc, 0, 0, 1000, 1000, memdec, 0, 0, SRCCOPY);
+		float x_cord = 0;
+		float y_cord = 500;
+		float x_bias = 10;
+		float y_bias = 2;
+		float delay = 80;
+		while (x_cord < 1000) {
+			for (int i = 0; i < 6; i++) {
+				SelectObject(memdec, sprites[i]);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				Sleep(delay);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				x_cord += x_bias;
+				y_cord += -y_bias;
+			}
+			for (int i = 5; i >= 0; i--) {
+				SelectObject(memdec, sprites[i]);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				Sleep(delay);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				x_cord += x_bias;
+				y_cord += y_bias;
+			}
+			for (int i = 7; i < 11; i++) {
+				SelectObject(memdec, sprites[i]);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				Sleep(delay);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				x_cord += x_bias;
+				y_cord += y_bias;
+			}
+			for (int i = 10; i >= 7; i--) {
+				SelectObject(memdec, sprites[i]);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				Sleep(delay);
+				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
+				x_cord += x_bias;
+				y_cord += -y_bias;
+			}
+		}
 		EndPaint(hWnd, &ps);
         }
         break;
