@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <complex>
 
+
 #define MAX_LOADSTRING 100
 
 // Глобальные переменные:
@@ -34,10 +35,12 @@ typedef struct param {
 	const int iterations = 80;
 };
 
-const double zoom = 0.5;
-const double move = 0.3;
+const double zoom = 0.8;
+const double move = 0.1; 
 param parameters;
 
+const double c_cre = (abs(parameters.Cre_start) + abs(parameters.Cre_finish)) * move;
+const double c_cim = (abs(parameters.Cim_start) + abs(parameters.Cim_finish)) * move;
 
 
 
@@ -217,21 +220,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			parameters.Cre_finish /= zoom;
 			break;
 		case VK_RIGHT:
-			parameters.Cre_start -=  move;
-			parameters.Cre_finish -= move;
+			parameters.Cre_start -= c_cre;
+			parameters.Cre_finish -= c_cre;
 			break;
 		case VK_LEFT:
-			parameters.Cre_start += move;
-			parameters.Cre_finish += move;
+			parameters.Cre_start += c_cre;
+			parameters.Cre_finish += c_cre;
 			break;
 		case VK_UP:
-			parameters.Cim_start += move;
-			parameters.Cim_finish += move;
+			parameters.Cim_start += c_cim;
+			parameters.Cim_finish += c_cim;
 			
 			break;
 		case VK_DOWN:
-			parameters.Cim_start -= move;
-			parameters.Cim_finish -= move;
+			parameters.Cim_start -= c_cim;
+			parameters.Cim_finish -= c_cim;
 			break;
 		case VK_SPACE:
 			InvalidateRect(hWnd, NULL, TRUE);
