@@ -149,6 +149,24 @@ void step_color(double &red, double &green, double& blue) {
 	}
 }
 
+COLORREF set_color( int i){
+	COLORREF color;
+	int r,g,b;
+
+	if (i <20 ) {
+		color = RGB(255, 132, 132);
+	}
+	else if (i <40 ) {
+		color = RGB(243, 138, 249);
+	}
+	else if (i < 60) {
+		color = RGB(230, 225, 47);
+	}
+	else{
+		color = RGB(79, 217, 89);
+	}
+	return color;
+}
 
 //
 //  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -199,20 +217,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			parameters.Cre_finish /= zoom;
 			break;
 		case VK_RIGHT:
-			parameters.Cre_start = parameters.Cre_start - (parameters.Cre_start * move);
-			parameters.Cre_finish = parameters.Cre_finish - (parameters.Cre_finish * move);
+			parameters.Cre_start -=  move;
+			parameters.Cre_finish -= move;
 			break;
 		case VK_LEFT:
-			parameters.Cre_start += parameters.Cre_start * move;
-			parameters.Cre_finish += parameters.Cre_finish * move;
+			parameters.Cre_start += move;
+			parameters.Cre_finish += move;
 			break;
 		case VK_UP:
-			parameters.Cim_start -= parameters.Cim_start * move;
-			parameters.Cim_finish -= parameters.Cim_finish * move;
+			parameters.Cim_start += move;
+			parameters.Cim_finish += move;
+			
 			break;
 		case VK_DOWN:
-			parameters.Cim_start += parameters.Cim_start * move;
-			parameters.Cim_finish += parameters.Cim_finish * move;
+			parameters.Cim_start -= move;
+			parameters.Cim_finish -= move;
 			break;
 		case VK_SPACE:
 			InvalidateRect(hWnd, NULL, TRUE);
@@ -245,11 +264,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				for (int i = 0; i < parameters.iterations; i++) {
 					z = (z * z) + c;
 					if (abs(z) > 2) {
-						color = RGB(red,green,blue);
+						color = set_color(i);
 						SetPixel(hdc, x, y, color);
 						break;
-					}
-					step_color(red, green, blue);
+					}	
 				}
 				if (abs(z) <= 2) {
 					SetPixel(hdc, x, y, color_black);
