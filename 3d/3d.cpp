@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "3d.h"
 #include <Windows.h>
+#include <complex>
 
 #define MAX_LOADSTRING 100
 
@@ -19,6 +20,29 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
+
+
+typedef struct param {
+	double scr_x = 800;
+	double scr_y = 600;
+
+	double Cre_start = -2;
+	double Cre_finish = 0.5;
+	double Cim_start = -1.25;
+	double Cim_finish = 1.25;
+
+	const int iterations = 80;
+};
+
+const double zoom = 0.5;
+const double move = 0.3;
+param parameters;
+
+
+
+
+COLORREF color_black = RGB(0, 0, 0);
+COLORREF color_white = RGB(255, 255, 255);
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -115,6 +139,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+void step_color(double &red, double &green, double& blue) {
+	red = red + 5 < 255 ? red + 5 : 255;
+	if (red == 255) {
+		green = green + 3.5 < 255 ? green + 3.5 : 255;
+	}
+	if (green == 255) {
+		blue = blue + 2.2 < 255 ? blue + 2.2 : 255;
+	}
+}
+
 
 //
 //  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -152,16 +186,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int wmId = LOWORD(wParam);
 		switch (wmId)
 		{
-		case VK_UP:
-			InvalidateRect(hWnd, NULL, TRUE);
+		case VK_F1:
+			parameters.Cim_start *= zoom;
+			parameters.Cim_finish *= zoom;
+			parameters.Cre_start *= zoom;
+			parameters.Cre_finish *= zoom;
+			break;
+		case VK_F2:
+			parameters.Cim_start /= zoom;
+			parameters.Cim_finish /= zoom;
+			parameters.Cre_start /= zoom;
+			parameters.Cre_finish /= zoom;
 			break;
 		case VK_RIGHT:
-			InvalidateRect(hWnd, NULL, TRUE);
+			parameters.Cre_start = parameters.Cre_start - (parameters.Cre_start * move);
+			parameters.Cre_finish = parameters.Cre_finish - (parameters.Cre_finish * move);
 			break;
 		case VK_LEFT:
-			InvalidateRect(hWnd, NULL, TRUE);
+			parameters.Cre_start += parameters.Cre_start * move;
+			parameters.Cre_finish += parameters.Cre_finish * move;
+			break;
+		case VK_UP:
+			parameters.Cim_start -= parameters.Cim_start * move;
+			parameters.Cim_finish -= parameters.Cim_finish * move;
 			break;
 		case VK_DOWN:
+			parameters.Cim_start += parameters.Cim_start * move;
+			parameters.Cim_finish += parameters.Cim_finish * move;
+			break;
+		case VK_SPACE:
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		default:
@@ -173,65 +226,92 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		HBITMAP bg = (HBITMAP)LoadImage(NULL, L"bg.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		HBITMAP sprites[11];
-		sprites[0] = (HBITMAP)LoadImage(NULL, L"1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[1] = (HBITMAP)LoadImage(NULL, L"2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[2] = (HBITMAP)LoadImage(NULL, L"3.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[3] = (HBITMAP)LoadImage(NULL, L"4.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[4] = (HBITMAP)LoadImage(NULL, L"5.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[5] = (HBITMAP)LoadImage(NULL, L"6.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[6] = (HBITMAP)LoadImage(NULL, L"7.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[7] = (HBITMAP)LoadImage(NULL, L"8.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[8] = (HBITMAP)LoadImage(NULL, L"9.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[9] = (HBITMAP)LoadImage(NULL, L"10.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		sprites[10] = (HBITMAP)LoadImage(NULL, L"11.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-
-		HDC memdec;
-		memdec = CreateCompatibleDC(hdc);
-		SelectObject(memdec, bg);
-		BitBlt(hdc, 0, 0, 1000, 1000, memdec, 0, 0, SRCCOPY);
-		float x_cord = 0;
-		float y_cord = 500;
-		float x_bias = 10;
-		float y_bias = 2;
-		float delay = 80;
-		while (x_cord < 1000) {
-			for (int i = 0; i < 6; i++) {
-				SelectObject(memdec, sprites[i]);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				Sleep(delay);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				x_cord += x_bias;
-				y_cord += -y_bias;
-			}
-			for (int i = 5; i >= 0; i--) {
-				SelectObject(memdec, sprites[i]);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				Sleep(delay);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				x_cord += x_bias;
-				y_cord += y_bias;
-			}
-			for (int i = 7; i < 11; i++) {
-				SelectObject(memdec, sprites[i]);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				Sleep(delay);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				x_cord += x_bias;
-				y_cord += y_bias;
-			}
-			for (int i = 10; i >= 7; i--) {
-				SelectObject(memdec, sprites[i]);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				Sleep(delay);
-				BitBlt(hdc, x_cord, y_cord, 100, 100, memdec, 0, 0, SRCINVERT);
-				x_cord += x_bias;
-				y_cord += -y_bias;
+		
+		double step_x = (parameters.Cre_finish - parameters.Cre_start) / parameters.scr_x;
+		double step_y = (parameters.Cim_finish - parameters.Cim_start) / parameters.scr_y;
+		double bias_x;
+		double bias_y;
+		double red, green, blue;
+		COLORREF color;
+		for (int x = 0; x < parameters.scr_x; x++) {
+			for (int y = 0; y < parameters.scr_y; y++) {
+				bias_x = parameters.Cre_start + step_x * x;
+				bias_y = parameters.Cim_start + step_y * y;
+				std::complex<double>c(bias_x, bias_y);
+				std::complex<double>z(0, 0);
+				red = 0;
+				green = 0;
+				blue = 0;
+				for (int i = 0; i < parameters.iterations; i++) {
+					z = (z * z) + c;
+					if (abs(z) > 2) {
+						color = RGB(red,green,blue);
+						SetPixel(hdc, x, y, color);
+						break;
+					}
+					step_color(red, green, blue);
+				}
+				if (abs(z) <= 2) {
+					SetPixel(hdc, x, y, color_black);
+				}
 			}
 		}
+
+		/*COLORREF pix_color;
+		const double k = 3;
+		const double c = 10;
+
+
+
+
+		for (int x = 0; x < parameters.scr_x; x++) {
+			for (int y = 0; y < parameters.scr_y; y++) {
+				pix_color = GetPixel(hdc, x, y);
+				red = GetRValue(pix_color);
+				green = GetGValue(pix_color);
+				blue = GetBValue(pix_color);
+				pix_color = (int)(pix_color * k) % 255;
+				red = (int)(red * k) % 255;
+				green = (int)(green * k) % 255;
+				blue = (int)(blue * k) % 255;
+				SetPixel(hdc, x, y, RGB(red, green, blue));
+			}
+		}
+
+
+		for (int x = 0; x < parameters.scr_x; x++) {
+			for (int y = 0; y < parameters.scr_y; y++) {
+				pix_color = GetPixel(hdc, x, y);
+				red = GetRValue(pix_color);
+				green = GetGValue(pix_color);
+				blue = GetBValue(pix_color);
+				red = (int)(red + c) % 255;
+				green = (int)(green + c) % 255;
+				blue = (int)(blue + c) % 255;
+				SetPixel(hdc, x, y, RGB(red, green, blue));
+			}
+		}
+
+
+		
+		
+		int threshold = 0;
+		for (int x = 0; x < parameters.scr_x; x++) {
+			for (int y = 0; y < parameters.scr_y; y++) {
+				pix_color = GetPixel(hdc, x, y);
+				if (pix_color / 3 <= threshold) {
+					SetPixel(hdc, x, y, color_black);
+				}
+				else {
+					SetPixel(hdc, x, y, color_white);
+				}
+			}
+		}
+*/
+
+
 		EndPaint(hWnd, &ps);
-        }
+	}
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
