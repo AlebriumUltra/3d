@@ -63,53 +63,112 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return (int)msg.wParam;
 }
 
-float cube_cord[17][5] = 
-{ {100, 100, 0, 1, 0},
-	{100, 300, 0, 1, 1},
-	{300, 300, 0, 1, 1},
-	{300, 100, 0, 1, 1},
-	{100, 100, 0, 1, 1},
-	{100, 100, 200, 1, 0},
-	{100, 300, 200, 1, 1},
-	{300, 300, 200, 1, 1},
-	{300, 100, 200, 1, 1},
-	{100, 100, 200, 1, 1},
-	{100, 100, 0, 1, 1},
-	{100, 300, 200, 1, 0},
-	{100, 300, 0, 1, 1},
-	{300, 300, 200, 1, 0},
-	{300, 300, 0, 1, 1},
-	{300, 100, 200, 1, 0},
-	{300, 100, 0, 1, 1},
-};
 
-float current_cord[17][5] =
-{ {100, 100, 0, 1, 0},
-	{100, 300, 0, 1, 1},
-	{300, 300, 0, 1, 1},
-	{300, 100, 0, 1, 1},
-	{100, 100, 0, 1, 1},
-	{100, 100, 200, 1, 0},
-	{100, 300, 200, 1, 1},
-	{300, 300, 200, 1, 1},
-	{300, 100, 200, 1, 1},
-	{100, 100, 200, 1, 1},
-	{100, 100, 0, 1, 1},
-	{100, 300, 200, 1, 0},
-	{100, 300, 0, 1, 1},
-	{300, 300, 200, 1, 0},
-	{300, 300, 0, 1, 1},
-	{300, 100, 200, 1, 0},
-	{300, 100, 0, 1, 1},
+float cube_cord[17][4] = 
+{ {100, 100, 0, 0},
+	{100, 300, 0, 1},
+	{300, 300, 0, 1},
+	{300, 100, 0, 1},
+	{100, 100, 0, 1},
+	{100, 100, 200, 0},
+	{100, 300, 200, 1},
+	{300, 300, 200, 1},
+	{300, 100, 200, 1},
+	{100, 100, 200, 1},
+	{100, 100, 0, 1},
+	{100, 300, 200, 0},
+	{100, 300, 0, 1},
+	{300, 300, 200, 0},
+	{300, 300, 0, 1},
+	{300, 100, 200, 0},
+	{300, 100, 0, 1},
 };
 
 
+float test_cord[17][4] = 
+{ {100, 100, 0, 0},
+	{100, 300, 0, 1},
+	{300, 300, 0, 1},
+	{300, 100, 0, 1},
+	{100, 100, 0, 1},
+	{100, 100, 200, 0},
+	{100, 300, 200, 1},
+	{300, 300, 200, 1},
+	{300, 100, 200, 1},
+	{100, 100, 200, 1},
+	{100, 100, 0, 1},
+	{100, 300, 200, 0},
+	{100, 300, 0, 1},
+	{300, 300, 200, 0},
+	{300, 300, 0, 1},
+	{300, 100, 200, 0},
+	{300, 100, 0, 1},
+};
 
 
-float d = 200;
-float angle_a = 90;
+float current_cord[17][4] =
+{ {100, 100, 0, 0},
+	{100, 300, 0, 1},
+	{300, 300, 0, 1},
+	{300, 100, 0, 1},
+	{100, 100, 0, 1},
+	{100, 100, 200, 0},
+	{100, 300, 200, 1},
+	{300, 300, 200, 1},
+	{300, 100, 200, 1},
+	{100, 100, 200, 1},
+	{100, 100, 0, 1},
+	{100, 300, 200, 0},
+	{100, 300, 0, 1},
+	{300, 300, 200, 0},
+	{300, 300, 0, 1},
+	{300, 100, 200, 0},
+	{300, 100, 0, 1},
+};
+
+//
+//{ {100, 100, 0, 1, 0},
+//{ 100, 300, 0, 1, 1 },
+//{ 300, 300, 0, 1, 1 },
+//{ 300, 100, 0, 1, 1 },
+//{ 100, 100, 0, 1, 1 },
+//{ 100, 100, 200, 1, 0 },
+//{ 100, 300, 200, 1, 1 },
+//{ 300, 300, 200, 1, 1 },
+//{ 300, 100, 200, 1, 1 },
+//{ 100, 100, 200, 1, 1 },
+//{ 100, 100, 0, 1, 1 },
+//{ 100, 300, 200, 1, 0 },
+//{ 100, 300, 0, 1, 1 },
+//{ 300, 300, 200, 1, 0 },
+//{ 300, 300, 0, 1, 1 },
+//{ 300, 100, 200, 1, 0 },
+//{ 300, 100, 0, 1, 1 },
+//};
+
+//{ {100, 100, 0, 0},
+//{ 100, 300, 0, 1 },
+//{ 300, 300, 0, 1 },
+//{ 300, 100, 0, 1 },
+//{ 100, 100, 0, 1 },
+//{ 100, 100, 200, 0 },
+//{ 100, 300, 200, 1 },
+//{ 300, 300, 200, 1 },
+//{ 300, 100, 200, 1 },
+//{ 100, 100, 200, 1 },
+//{ 100, 100, 0, 1 },
+//{ 100, 300, 200, 0 },
+//{ 100, 300, 0, 1 },
+//{ 300, 300, 200, 0 },
+//{ 300, 300, 0, 1 },
+//{ 300, 100, 200, 0 },
+//{ 300, 100, 0, 1, 1 },
+//};
+
+float d = 1;
+float angle_a = 30;
 float angle_b = 90;
-float R = -50;
+float R = 1000;
 
 float copy_d = d;
 float copy_a = angle_a;
@@ -120,7 +179,7 @@ float copy_R = R;
 
 void reset_cord() {
 	int size_h = 17;
-	int size_w = 5;
+	int size_w = 4;
 	for (int i = 0; i < size_h; i++) {
 		for (int j = 0; j < size_w; j++) {
 			current_cord[i][j] = cube_cord[i][j];
@@ -131,7 +190,7 @@ void reset_cord() {
 void paint_cube(HDC hdc) {
 	int size_h = 17;
 	for (int i = 0; i < size_h; i++) {
-		if (current_cord[i][4] == 0) {
+		if (current_cord[i][3] == 0) {
 			MoveToEx(hdc, current_cord[i][0], current_cord[i][1], NULL);
 		}
 		else {
@@ -140,47 +199,43 @@ void paint_cube(HDC hdc) {
 	}
 }
 
-void transform_views() {
-	float sum = 0;
+
+void O_dot() {
 	int size_h = 17;
-	int size_w = 4;
+	for (int i = 0; i < size_h; i++) {
+		current_cord[i][0] -= 100;
+		current_cord[i][1] -= 100;
+		current_cord[i][2] -= 100; 
+	}
+}
+
+
+void transform_views() {
 	float fi = angle_a * PI / 180;
 	float teta = angle_b * PI / 180;
-	
-	float matrix_views[4][4] = 
-	{ 
-		{-sin(teta), -cos(fi) * cos(teta), -sin(fi) * cos(teta), 0},
-		{cos(fi), -cos(fi) * sin(teta), -sin(fi) * sin(teta), 0},
-		{0, sin(fi), -cos(fi), 0},
-		{0, 0, R, 1}  
-	};
-
-	float buf[4];
+	int size_h = 17;
 	for (int i = 0; i < size_h; i++) {
-		for (int j = 0; j < size_w; j++) {
-			for (int c = 0; c < 4; c++) {
-				sum += current_cord[i][c] * matrix_views[c][j];
-			}
-				buf[j] = sum;
-				sum = 0;
-			}
-			for (int h = 0; h < 4; h++) {
-				current_cord[i][h] = buf[h];
-			}
-		}
+		float Xe = -sin(teta) * current_cord[i][0] + cos(fi) * current_cord[i][1];
+		float Ye = -cos(fi) * cos(teta) * current_cord[i][0] + -cos(fi) * sin(teta) * current_cord[i][1] + sin(fi) * current_cord[i][2];
+		float Ze = -sin(fi) * cos(teta) * current_cord[i][0] + -sin(fi) * sin(teta) * current_cord[i][1] + -cos(fi) * current_cord[i][2] + R;
+		current_cord[i][0] = Xe;
+		current_cord[i][1] = Ye;
+		current_cord[i][2] = Ze;
+	}
 }
+
 
 void perspective() {
 	for (int i = 0; i < 17; i++) {
-		current_cord[i][0] = (d * current_cord[i][0]) / current_cord[i][2];
-		current_cord[i][1] = (d * current_cord[i][1]) / current_cord[i][2];
+		current_cord[i][0] = (d * current_cord[i][0]);
+		current_cord[i][1] = (d * current_cord[i][1]);
 	}
 }
 
 void screen_transform() {
 	for (int i = 0; i < 17; i++) {
 		current_cord[i][0] += 500;
-		current_cord[i][1] += 300;
+		current_cord[i][1] += 500;
 	}
 }
 
@@ -284,47 +339,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			R = copy_R;
 			d = copy_d;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case VK_LEFT:
 			angle_a = angle_a - 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case VK_RIGHT:
 			angle_a = angle_a + 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case 'C':
 			angle_b = angle_b - 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case 'V':
 			angle_b = angle_b + 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case VK_UP:
 			R = R + 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case VK_DOWN:
 			R = R - 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case 'Z':
 			d = d - 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		case 'X':
 			d = d + 1;
 			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -336,6 +382,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		reset_cord();
+		O_dot();
 		transform_views();
 		perspective();
 		screen_transform();
