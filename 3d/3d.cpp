@@ -80,10 +80,8 @@ float cube_cord[17][5] =
 	{300, 300, 200, 1, 0},
 	{300, 300, 0, 1, 1},
 	{300, 100, 200, 1, 0},
-	{300, 100, 200, 1, 1},
+	{300, 100, 0, 1, 1},
 };
-
-int h = 100;
 
 float current_cord[17][5] =
 { {100, 100, 0, 1, 0},
@@ -102,33 +100,16 @@ float current_cord[17][5] =
 	{300, 300, 200, 1, 0},
 	{300, 300, 0, 1, 1},
 	{300, 100, 200, 1, 0},
-	{300, 300, 200, 1, 1},
+	{300, 100, 0, 1, 1},
 };
 
-//{ {h, -h, -h, 1, 0},
-//{ h, h, -h, 1, 1 },
-//{ -h, h, -h, 1, 1 },
-//{ -h, h, h, 1, 1 },
-//{ -h, -h, h, 1, 1 },
-//{ h, -h, h, 1, 1 },
-//{ h, -h, -h, 1, 1 },
-//{ h, h, -h, 1, 0 },
-//{ h, h, h, 1, 1 },
-//{ -h, h, h, 1, 1 },
-//{ h, h, h, 1, 0 },
-//{ h, -h, h, 1, 1 },
-//{ h, -h, -h, 1, 0 },
-//{ -h, -h, -h, 1, 1 },
-//{ -h, h, -h, 1, 1 },
-//{ -h, -h, -h, 1, 0 },
-//{ -h, -h, h, 1, 1 },
-//};
+
 
 
 float d = 100;
-float angle_a = 80;
-float angle_b = 70;
-float R = 10;
+float angle_a = 70;
+float angle_b = 30;
+float R = 200;
 
 
 void reset_cord() {
@@ -182,6 +163,20 @@ void transform_views() {
 			}
 		}
 }
+
+//void transform_views() {
+//	float fi = angle_a * PI / 180;
+//	float teta = angle_b * PI / 180;
+//	int size_h = 17;
+//	for (int i = 0; i < size_h; i++) {
+//			float Xe = -sin(teta) * current_cord[i][0] + cos(fi) * current_cord[i][1];
+//			float Ye = -cos(fi) * cos(teta) * current_cord[i][0] + (-cos(fi) * sin(teta) * current_cord[i][1]) + sin(fi) * current_cord[i][2];
+//			float Ze = -sin(fi) * cos(teta) * current_cord[i][0] + (-sin(fi) * sin(teta) * current_cord[i][1]) + (-cos(fi) * current_cord[i][2]) + R;
+//			current_cord[i][0] = Xe;
+//			current_cord[i][1] = Ye;
+//			current_cord[i][2] = Ze;
+//	}
+//}
 
 void perspective() {
 	for (int i = 0; i < 17; i++) {
