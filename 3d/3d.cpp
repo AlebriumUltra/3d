@@ -5,8 +5,10 @@
 #include "3d.h"
 #include <Windows.h>
 #include <complex>
+#include <cmath>
 
 #define MAX_LOADSTRING 100
+#define PI 3.14159265358979323846
 
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
@@ -18,32 +20,6 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
-
-
-
-typedef struct param {
-	double scr_x = 266;
-	double scr_y = 200;
-
-	double Cre_start = -2;
-	double Cre_finish = 0.5;
-	double Cim_start = -1.25;
-	double Cim_finish = 1.25;
-
-	const int iterations = 80;
-};
-param parameters;
-
-const double zoom = 0.8;
-const double move = 0.1;
-
-const float c_cre = (abs(parameters.Cre_start) + abs(parameters.Cre_finish)) * move;
-const float c_cim = (abs(parameters.Cim_start) + abs(parameters.Cim_finish)) * move;
-
-
-
-
 
 COLORREF color_black = RGB(0, 0, 0);
 COLORREF color_white = RGB(255, 255, 255);
@@ -87,7 +63,139 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return (int)msg.wParam;
 }
 
+float cube_cord[17][5] = 
+{ {100, 100, 0, 1, 0},
+	{100, 300, 0, 1, 1},
+	{300, 300, 0, 1, 1},
+	{300, 100, 0, 1, 1},
+	{100, 100, 0, 1, 1},
+	{100, 100, 200, 1, 0},
+	{100, 300, 200, 1, 1},
+	{300, 300, 200, 1, 1},
+	{300, 100, 200, 1, 1},
+	{100, 100, 200, 1, 1},
+	{100, 100, 0, 1, 1},
+	{100, 300, 200, 1, 0},
+	{100, 300, 0, 1, 1},
+	{300, 300, 200, 1, 0},
+	{300, 300, 0, 1, 1},
+	{300, 100, 200, 1, 0},
+	{300, 100, 200, 1, 1},
+};
 
+int h = 100;
+
+float current_cord[17][5] =
+{ {100, 100, 0, 1, 0},
+	{100, 300, 0, 1, 1},
+	{300, 300, 0, 1, 1},
+	{300, 100, 0, 1, 1},
+	{100, 100, 0, 1, 1},
+	{100, 100, 200, 1, 0},
+	{100, 300, 200, 1, 1},
+	{300, 300, 200, 1, 1},
+	{300, 100, 200, 1, 1},
+	{100, 100, 200, 1, 1},
+	{100, 100, 0, 1, 1},
+	{100, 300, 200, 1, 0},
+	{100, 300, 0, 1, 1},
+	{300, 300, 200, 1, 0},
+	{300, 300, 0, 1, 1},
+	{300, 100, 200, 1, 0},
+	{300, 300, 200, 1, 1},
+};
+
+//{ {h, -h, -h, 1, 0},
+//{ h, h, -h, 1, 1 },
+//{ -h, h, -h, 1, 1 },
+//{ -h, h, h, 1, 1 },
+//{ -h, -h, h, 1, 1 },
+//{ h, -h, h, 1, 1 },
+//{ h, -h, -h, 1, 1 },
+//{ h, h, -h, 1, 0 },
+//{ h, h, h, 1, 1 },
+//{ -h, h, h, 1, 1 },
+//{ h, h, h, 1, 0 },
+//{ h, -h, h, 1, 1 },
+//{ h, -h, -h, 1, 0 },
+//{ -h, -h, -h, 1, 1 },
+//{ -h, h, -h, 1, 1 },
+//{ -h, -h, -h, 1, 0 },
+//{ -h, -h, h, 1, 1 },
+//};
+
+
+float d = 100;
+float angle_a = 80;
+float angle_b = 70;
+float R = 10;
+
+
+void reset_cord() {
+	int size_h = 17;
+	int size_w = 5;
+	for (int i = 0; i < size_h; i++) {
+		for (int j = 0; j < size_w; j++) {
+			current_cord[i][j] = cube_cord[i][j];
+		}
+	}
+}
+
+void paint_cube(HDC hdc) {
+	int size_h = 17;
+	for (int i = 0; i < size_h; i++) {
+		if (current_cord[i][4] == 0) {
+			MoveToEx(hdc, current_cord[i][0], current_cord[i][1], NULL);
+		}
+		else {
+			LineTo(hdc, current_cord[i][0], current_cord[i][1]);
+		}
+	}
+}
+
+void transform_views() {
+	float sum = 0;
+	int size_h = 17;
+	int size_w = 4;
+	float fi = angle_a * PI / 180;
+	float teta = angle_b * PI / 180;
+	
+	float matrix_views[4][4] = 
+	{ 
+		{-sin(teta), -cos(fi) * cos(teta), -sin(fi) * cos(teta), 0},
+		{cos(fi), -cos(fi) * sin(teta), -sin(fi) * sin(teta), 0},
+		{0, sin(fi), -cos(fi), 0},
+		{0, 0, R, 1}  
+	};
+
+	float buf[4];
+	for (int i = 0; i < size_h; i++) {
+		for (int j = 0; j < size_w; j++) {
+			for (int c = 0; c < 4; c++) {
+				sum += current_cord[i][c] * matrix_views[c][j];
+			}
+				buf[j] = sum;
+				sum = 0;
+			}
+			for (int h = 0; h < 4; h++) {
+				current_cord[i][h] = buf[h];
+			}
+		}
+}
+
+void perspective() {
+	for (int i = 0; i < 17; i++) {
+		current_cord[i][0] = (d * current_cord[i][0]) / current_cord[i][2];
+		current_cord[i][1] = (d * current_cord[i][1]) / current_cord[i][2];
+	}
+}
+
+void screen_transform() {
+	for (int i = 0; i < 17; i++) {
+		current_cord[i][0] += 500;
+		current_cord[i][1] += 300;
+	}
+}
 
 //
 //  ФУНКЦИЯ: MyRegisterClass()
@@ -143,92 +251,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-COLORREF set_color(int i) {
-	COLORREF color;
-	int r, g, b;
-
-	if (i < 20) {
-		color = RGB(255, 132, 132);
-	}
-	else if (i < 40) {
-		color = RGB(243, 138, 249);
-	}
-	else if (i < 60) {
-		color = RGB(230, 225, 47);
-	}
-	else {
-		color = RGB(79, 217, 89);
-	}
-	return color;
-}
-
-void gray_gradient(HDC hdc) {
-	COLORREF pix_color;
-	float red, green, blue;
-	for (int x = 0; x < parameters.scr_x; x++) {
-		for (int y = 0; y < parameters.scr_y; y++) {
-			pix_color = GetPixel(hdc, x, y);
-			red = (GetRValue(pix_color) + GetGValue(pix_color) + GetBValue(pix_color)) / 3;
-			blue = green = red;
-			SetPixel(hdc, x, y, RGB(red, green, blue));
-		}
-	}
-}
-
-void monochrome(HDC hdc, float threshold) {
-	COLORREF pix_color;
-	float red;
-	for (int x = 0; x < parameters.scr_x; x++) {
-		for (int y = 0; y < parameters.scr_y; y++) {
-			pix_color = GetPixel(hdc, x, y);
-			red = GetRValue(pix_color);
-			if (red <= threshold) {
-				SetPixel(hdc, x, y, color_black);
-			}
-			else {
-				SetPixel(hdc, x, y, color_white);
-			}
-		}
-	}
-}
-
-void multi_brightness(HDC hdc, const float k) {
-	COLORREF pix_color;
-	float red, green, blue;
-	for (int x = 0; x < parameters.scr_x; x++) {
-		for (int y = 0; y < parameters.scr_y; y++) {
-			pix_color = GetPixel(hdc, x, y);
-			red = GetRValue(pix_color);
-			green = GetGValue(pix_color);
-			blue = GetBValue(pix_color);
-			red = (int)(red * k) % 255;
-			green = (int)(green * k) % 255;
-			blue = (int)(blue * k) % 255;
-			SetPixel(hdc, x, y, RGB(red, green, blue));
-		}
-	}
-}
 
 
-void sum_brightness(HDC hdc, const float c) {
-	COLORREF pix_color;
-	float red, green, blue;
-	for (int x = 0; x < parameters.scr_x; x++) {
-		for (int y = 0; y < parameters.scr_y; y++) {
-			pix_color = GetPixel(hdc, x, y);
-			red = GetRValue(pix_color);
-			green = GetGValue(pix_color);
-			blue = GetBValue(pix_color);
-			red = (int)(red + c) % 255;
-			green = (int)(green + c) % 255;
-			blue = (int)(blue + c) % 255;
-			SetPixel(hdc, x, y, RGB(red, green, blue));
-		}
-	}
-}
 
-
-//
 //  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
 //  ЦЕЛЬ: Обрабатывает сообщения в главном окне.
@@ -240,6 +265,7 @@ void sum_brightness(HDC hdc, const float c) {
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	HDC memdc;
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -264,36 +290,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int wmId = LOWORD(wParam);
 		switch (wmId)
 		{
-		case VK_F1:
-			parameters.Cim_start *= zoom;
-			parameters.Cim_finish *= zoom;
-			parameters.Cre_start *= zoom;
-			parameters.Cre_finish *= zoom;
-			break;
-		case VK_F2:
-			parameters.Cim_start /= zoom;
-			parameters.Cim_finish /= zoom;
-			parameters.Cre_start /= zoom;
-			parameters.Cre_finish /= zoom;
-			break;
-		case VK_RIGHT:
-			parameters.Cre_start = parameters.Cre_start - (parameters.Cre_start * move);
-			parameters.Cre_finish = parameters.Cre_finish - (parameters.Cre_finish * move);
+		case VK_SPACE:
+			reset_cord();
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
 			break;
 		case VK_LEFT:
-			parameters.Cre_start += parameters.Cre_start * move;
-			parameters.Cre_finish += parameters.Cre_finish * move;
+			angle_a = angle_a - 1;
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
+			break;
+		case VK_RIGHT:
+			angle_a = angle_a + 1;
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
+			break;
+		case 'C':
+			angle_b = angle_b - 1;
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
+			break;
+		case 'V':
+			angle_b = angle_b + 1;
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
 			break;
 		case VK_UP:
-			parameters.Cim_start -= parameters.Cim_start * move;
-			parameters.Cim_finish -= parameters.Cim_finish * move;
+			R = R + 1;
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
 			break;
 		case VK_DOWN:
-			parameters.Cim_start += parameters.Cim_start * move;
-			parameters.Cim_finish += parameters.Cim_finish * move;
-			break;
-		case VK_SPACE:
+			R = R - 1;
 			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
+			break;
+		case 'Z':
+			d = d - 1;
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
+			break;
+		case 'X':
+			d = d + 1;
+			InvalidateRect(hWnd, NULL, TRUE);
+			UpdateWindow(hWnd);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -302,44 +342,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_PAINT:
 	{
-
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-
-		float step_x = (parameters.Cre_finish - parameters.Cre_start) / parameters.scr_x;
-		float step_y = (parameters.Cim_finish - parameters.Cim_start) / parameters.scr_y;
-		float bias_x;
-		float bias_y;
-		float red, green, blue;
-		COLORREF color;
-		for (int x = 0; x < parameters.scr_x; x++) {
-			for (int y = 0; y < parameters.scr_y; y++) {
-				bias_x = parameters.Cre_start + step_x * x;
-				bias_y = parameters.Cim_start + step_y * y;
-				std::complex<float>c(bias_x, bias_y);
-				std::complex<float>z(0, 0);
-				red = 0;
-				green = 0;
-				blue = 0;
-				for (int i = 0; i < parameters.iterations; i++) {
-					z = (z * z) + c;
-					if (abs(z) > 2) {
-						color = set_color(i);
-						SetPixel(hdc, x, y, color);
-						break;
-					}
-				}
-				if (abs(z) <= 2) {
-					SetPixel(hdc, x, y, color_black);
-				}
-			}
-		}
-
-		COLORREF pix_color;
-		multi_brightness(hdc, 5);
-		sum_brightness(hdc, 100);
-		gray_gradient(hdc);
-		monochrome(hdc, 200);
+		reset_cord();
+		transform_views();
+		perspective();
+		screen_transform();
+		paint_cube(hdc);
 		EndPaint(hWnd, &ps);
 	}
 	break;
