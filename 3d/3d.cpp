@@ -106,10 +106,16 @@ float current_cord[17][5] =
 
 
 
-float d = 100;
-float angle_a = 70;
-float angle_b = 30;
-float R = 200;
+float d = 200;
+float angle_a = 90;
+float angle_b = 90;
+float R = -50;
+
+float copy_d = d;
+float copy_a = angle_a;
+float copy_b = angle_b;
+float copy_R = R;
+
 
 
 void reset_cord() {
@@ -163,20 +169,6 @@ void transform_views() {
 			}
 		}
 }
-
-//void transform_views() {
-//	float fi = angle_a * PI / 180;
-//	float teta = angle_b * PI / 180;
-//	int size_h = 17;
-//	for (int i = 0; i < size_h; i++) {
-//			float Xe = -sin(teta) * current_cord[i][0] + cos(fi) * current_cord[i][1];
-//			float Ye = -cos(fi) * cos(teta) * current_cord[i][0] + (-cos(fi) * sin(teta) * current_cord[i][1]) + sin(fi) * current_cord[i][2];
-//			float Ze = -sin(fi) * cos(teta) * current_cord[i][0] + (-sin(fi) * sin(teta) * current_cord[i][1]) + (-cos(fi) * current_cord[i][2]) + R;
-//			current_cord[i][0] = Xe;
-//			current_cord[i][1] = Ye;
-//			current_cord[i][2] = Ze;
-//	}
-//}
 
 void perspective() {
 	for (int i = 0; i < 17; i++) {
@@ -287,6 +279,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case VK_SPACE:
 			reset_cord();
+			angle_a = copy_a;
+			angle_b = copy_b;
+			R = copy_R;
+			d = copy_d;
 			InvalidateRect(hWnd, NULL, TRUE);
 			UpdateWindow(hWnd);
 			break;
