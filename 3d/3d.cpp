@@ -1,6 +1,6 @@
 ﻿// 3d.cpp : Определяет точку входа для приложения.
 //
-
+#define _CRT_SECURE_NO_WARNINGS
 #include "framework.h"
 #include "3d.h"
 #include <Windows.h>
@@ -9,6 +9,9 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <exception>
+#include <ctime>
+#include <iostream>
 
 #define MAX_LOADSTRING 100
 #define PI 3.14159265358979323846
@@ -67,113 +70,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
-float cube_cord[17][4] =
-{ {100, 100, 0, 0},
-	{100, 300, 0, 1},
-	{300, 300, 0, 1},
-	{300, 100, 0, 1},
-	{100, 100, 0, 1},
-	{100, 100, 200, 0},
-	{100, 300, 200, 1},
-	{300, 300, 200, 1},
-	{300, 100, 200, 1},
-	{100, 100, 200, 1},
-	{100, 100, 0, 1},
-	{100, 300, 200, 0},
-	{100, 300, 0, 1},
-	{300, 300, 200, 0},
-	{300, 300, 0, 1},
-	{300, 100, 200, 0},
-	{300, 100, 0, 1},
-};
+std::string model_name = "hamer.obj";
+int count_v = 0;
+int count_f = 0;
 
-
-float test_cord[17][4] =
-{ {100, 100, 0, 0},
-	{100, 300, 0, 1},
-	{300, 300, 0, 1},
-	{300, 100, 0, 1},
-	{100, 100, 0, 1},
-	{100, 100, 200, 0},
-	{100, 300, 200, 1},
-	{300, 300, 200, 1},
-	{300, 100, 200, 1},
-	{100, 100, 200, 1},
-	{100, 100, 0, 1},
-	{100, 300, 200, 0},
-	{100, 300, 0, 1},
-	{300, 300, 200, 0},
-	{300, 300, 0, 1},
-	{300, 100, 200, 0},
-	{300, 100, 0, 1},
-};
-
-
-float current_cord[17][4] =
-{ {100, 100, 0, 0},
-	{100, 300, 0, 1},
-	{300, 300, 0, 1},
-	{300, 100, 0, 1},
-	{100, 100, 0, 1},
-	{100, 100, 200, 0},
-	{100, 300, 200, 1},
-	{300, 300, 200, 1},
-	{300, 100, 200, 1},
-	{100, 100, 200, 1},
-	{100, 100, 0, 1},
-	{100, 300, 200, 0},
-	{100, 300, 0, 1},
-	{300, 300, 200, 0},
-	{300, 300, 0, 1},
-	{300, 100, 200, 0},
-	{300, 100, 0, 1},
-};
-
-
-std::vector<double>vertexes;
+std::vector<std::vector<double>>vertexes;
+std::vector<std::vector<double>>trans_vertexes;
 std::vector<std::vector<double>>faces;
 
-std::vector<double>copy_vertexes;
-std::vector<std::vector<double>>copy_faces;
-
-//
-//{ {100, 100, 0, 1, 0},
-//{ 100, 300, 0, 1, 1 },
-//{ 300, 300, 0, 1, 1 },
-//{ 300, 100, 0, 1, 1 },
-//{ 100, 100, 0, 1, 1 },
-//{ 100, 100, 200, 1, 0 },
-//{ 100, 300, 200, 1, 1 },
-//{ 300, 300, 200, 1, 1 },
-//{ 300, 100, 200, 1, 1 },
-//{ 100, 100, 200, 1, 1 },
-//{ 100, 100, 0, 1, 1 },
-//{ 100, 300, 200, 1, 0 },
-//{ 100, 300, 0, 1, 1 },
-//{ 300, 300, 200, 1, 0 },
-//{ 300, 300, 0, 1, 1 },
-//{ 300, 100, 200, 1, 0 },
-//{ 300, 100, 0, 1, 1 },
-//};
-
-//{ {100, 100, 0, 0},
-//{ 100, 300, 0, 1 },
-//{ 300, 300, 0, 1 },
-//{ 300, 100, 0, 1 },
-//{ 100, 100, 0, 1 },
-//{ 100, 100, 200, 0 },
-//{ 100, 300, 200, 1 },
-//{ 300, 300, 200, 1 },
-//{ 300, 100, 200, 1 },
-//{ 100, 100, 200, 1 },
-//{ 100, 100, 0, 1 },
-//{ 100, 300, 200, 0 },
-//{ 100, 300, 0, 1 },
-//{ 300, 300, 200, 0 },
-//{ 300, 300, 0, 1 },
-//{ 300, 100, 200, 0 },
-//{ 300, 100, 0, 1, 1 },
-//};
 
 float d = 1500;
 float angle_a = 30;
@@ -194,15 +98,15 @@ float copy_y = move_y;
 bool model_is_exist = false;
 
 void paint(HDC hdc) {
-	size_t size_v = vertexes.size();
+	size_t size_v = trans_vertexes.size();
 	size_t size_f = faces.size();
 	size_t size_current_f;
 	int count = 0;
-	for (int i = 0; i < size_f; i++) {
+	for (size_t i = 0; i < size_f; i++) {
 		size_current_f = faces[i].size();
-		MoveToEx(hdc, vertexes[(faces[i][0] - 1) * 3], vertexes[(faces[i][0] - 1) * 3 + 1], NULL);
-		for (int j = 0; j < size_current_f; j++) {
-			LineTo(hdc, vertexes[(faces[i][j] - 1) * 3], vertexes[(faces[i][j] - 1) * 3 + 1]);
+		MoveToEx(hdc, trans_vertexes[faces[i][0] - 1][0], trans_vertexes[faces[i][0] - 1][1], NULL);
+		for (size_t j = 0; j < size_current_f; j++) {
+			LineTo(hdc, trans_vertexes[faces[i][j] - 1][0], trans_vertexes[faces[i][j] - 1][1]);
 		}
 	}
 }
@@ -211,22 +115,22 @@ void transform_views() {
 	double fi = angle_a * PI / 180;
 	double teta = angle_b * PI / 180;
 	size_t size = vertexes.size();
-	for (int i = 0; i < size; i+=3) {
-		double Xe = -sin(fi) * vertexes[i+0] + cos(fi) * vertexes[i+1];
-		double Ye = -cos(fi) * cos(teta) * vertexes[i+0] + -cos(teta) * sin(fi) * vertexes[i+1] + sin(teta) * vertexes[i+2];
-		double Ze = -cos(teta) * cos(fi) * vertexes[i+0] + -sin(fi) * sin(teta) * vertexes[i+1] + -cos(teta) * vertexes[i+2] + R;
-		vertexes[i+0] = Xe;
-		vertexes[i+1] = Ye;
-		vertexes[i+2] = Ze;
+	for (size_t i = 0; i < size; i++) {
+		double Xe = -sin(fi) * vertexes[i][0] + cos(fi) * vertexes[i][1];
+		double Ye = -cos(fi) * cos(teta) * vertexes[i][0] + -cos(teta) * sin(fi) * vertexes[i][1] + sin(teta) * vertexes[i][2];
+		double Ze = -cos(teta) * cos(fi) * vertexes[i][0] + -sin(fi) * sin(teta) * vertexes[i][1] + -cos(teta) * vertexes[i][2] + R;
+		trans_vertexes[i][0] = Xe;
+		trans_vertexes[i][1] = Ye;
+		trans_vertexes[i][2] = Ze;
 	}
 }
 
 
 void perspective() {
 	size_t size = vertexes.size();
-	for (int i = 0; i < size; i+=3) {
-		vertexes[i+0] = d * vertexes[i + 0] / vertexes[i + 2];
-		vertexes[i + 1] = d * vertexes[i + 1] / vertexes[i + 2];
+	for (int i = 0; i < size; i++) {
+		trans_vertexes[i][0] = d * trans_vertexes[i][0] / trans_vertexes[i][2];
+		trans_vertexes[i][1] = d * trans_vertexes[i][1] / trans_vertexes[i][2];
 	}
 }
 
@@ -234,64 +138,104 @@ void screen_transform() {
 	size_t size = vertexes.size();
 	int x = move_x;
 	int y = move_y;
-	for (int i = 0; i < size; i+=3) {
-		vertexes[i + 0] += x;
-		vertexes[i + 1] += y;
+	for (int i = 0; i < size; i++) {
+		trans_vertexes[i][0] += x;
+		trans_vertexes[i][1] += y;
 	}
 }
 
+void save_info() {
+	std::ofstream fout;
+	fout.open("info.txt", std::ios_base::out | std::ios_base::app);
+	fout << "Model name: " << model_name << std::endl;
+	fout << "Vertexes: " << count_v << std::endl;
+	fout << "Faces: " << count_f << std::endl;
+	fout << '\n';
+	fout.close();
+}
+
+void save_param() {
+	std::ofstream fout;
+	fout.open("param.txt", std::ios_base::out | std::ios_base::app);
+	fout << "View parameters: " << std::endl;
+	fout << "d = " << d << std::endl;
+	fout << "R = " << R << std::endl;
+	fout << "angle_a = " << angle_a << std::endl;
+	fout << "angle_b = " << angle_b << std::endl;
+	fout << '\n';
+	fout.close();
+}
 
 void read_file() {
 	std::ifstream fin;
-	fin.open("hamer.obj");
-	std::string line;
+	fin.open(model_name);
+	if (!fin.is_open()) {
+		throw std::runtime_error("Could not open file, check file name or access");
+	}
+	std::string str;
 	char delim = ' ';
 	std::string token;
-	int count_v = 0;
-	int face_count = 0;
-	vertexes.clear();
+	size_t pos;
 	faces.clear();
 	while (!fin.eof()) {
-		getline(fin, line);
-		if (line[0] == 'v') {
+		getline(fin, str);
+		if (str[0] == 'v') {
+			str.erase(0, 2);
+			vertexes.push_back(std::vector<double>());
+			while ((pos = str.find(delim)) != std::string::npos) {
+				token = str.substr(0, pos);
+				str.erase(0, pos + 1);
+				vertexes[count_v].push_back(strtod(token.c_str(), NULL));
+			}
+			vertexes[count_v].push_back(strtod(str.c_str(), NULL));
 			count_v++;
-			line.erase(0, 2);
-			size_t pos;
-			while ((pos = line.find(delim)) != std::string::npos) {
-				token = line.substr(0, pos);
-				line.erase(0, pos + 1);
-				vertexes.push_back(strtod(token.c_str(), NULL));
-			}
-			vertexes.push_back(strtod(line.c_str(), NULL));
 		}
-		if (line[0] == 'f') {
-			line.erase(0, 2);
-			size_t pos;
+		if (str[0] == 'f') {
+			str.erase(0, 2);
 			faces.push_back(std::vector<double>());
-			while ((pos = line.find(delim)) != std::string::npos) {
-				token = line.substr(0, pos);
-				line.erase(0, pos + 1);
-				faces[face_count].push_back(strtod(token.c_str(), NULL));
+			while ((pos = str.find(delim)) != std::string::npos) {
+				token = str.substr(0, pos);
+				str.erase(0, pos + 1);
+				faces[count_f].push_back(strtod(token.c_str(), NULL));
 			}
-			faces[face_count].push_back(strtod(line.c_str(), NULL));
-			face_count++;
+			faces[count_f].push_back(strtod(str.c_str(), NULL));
+			count_f++;
 		}
 	}
+
+	trans_vertexes.resize(vertexes.size());
+	for (int i = 0; i < trans_vertexes.size(); i++) {
+		if (vertexes[i].size() != 3) {
+			throw std::invalid_argument("invalid obj file");
+		}
+		trans_vertexes[i].resize(vertexes[i].size());
+	}
+
+	fin.close();
+	save_info();
 	model_is_exist = true;
-	copy_vertexes = vertexes;
-	copy_faces = faces;
 }
+
 
 void reset_model() {
 	if (!model_is_exist) {
 		read_file();
+		return;
 	}
 	else {
-		vertexes = copy_vertexes;
-		faces = copy_faces;
+		return;
 	}
 }
 
+void error_logs(const std::exception& error) {
+	std::ofstream fout;
+	fout.open("logs.txt", std::ios_base::out | std::ios_base::app);
+	time_t now = time(0);
+	char* date = ctime(&now);
+	fout << date << error.what() << "\n\n";
+	fout.close();
+	exit(1);
+}
 
 
 //
@@ -444,6 +388,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			move_x = move_x + 10;
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
+		case VK_F1:
+			save_param();
+			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -453,12 +400,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		reset_model();
-		transform_views();
- 		perspective();
-		screen_transform();
-		paint(hdc);
-		EndPaint(hWnd, &ps);
+		try {
+			reset_model();
+			transform_views();
+			perspective();
+			screen_transform();
+			paint(hdc);
+		}
+		catch (const std::exception &error) {
+			error_logs(error);
+		}
+			EndPaint(hWnd, &ps);
 	}
 	break;
 	case WM_DESTROY:
