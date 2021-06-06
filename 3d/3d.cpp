@@ -80,13 +80,13 @@ std::vector<std::vector<double>>faces;
 
 
 float d = 1500;
-float angle_a = 30;
-float angle_b = 30;
+float angle_H = 30;
+float angle_V = 30;
 float R = -200;
 
 float copy_d = d;
-float copy_a = angle_a;
-float copy_b = angle_b;
+float copy_H = angle_H;
+float copy_V = angle_V;
 float copy_R = R;
 
 float move_x = 500;
@@ -108,23 +108,23 @@ void paint(HDC hdc) {
 		for (size_t j = 0; j < size_current_f; j++) {
 			LineTo(hdc, trans_vertexes[faces[i][j] - 1][0], trans_vertexes[faces[i][j] - 1][1]);
 		}
+		LineTo(hdc, trans_vertexes[faces[i][0] - 1][0], trans_vertexes[faces[i][0] - 1][1]);
 	}
 }
 
 void transform_views() {
-	double fi = angle_a * PI / 180;
-	double teta = angle_b * PI / 180;
+	double teta = angle_H * PI / 180;
+	double fi = angle_V * PI / 180;
 	size_t size = vertexes.size();
 	for (size_t i = 0; i < size; i++) {
-		double Xe = -sin(fi) * vertexes[i][0] + cos(fi) * vertexes[i][1];
-		double Ye = -cos(fi) * cos(teta) * vertexes[i][0] + -cos(teta) * sin(fi) * vertexes[i][1] + sin(teta) * vertexes[i][2];
-		double Ze = -cos(teta) * cos(fi) * vertexes[i][0] + -sin(fi) * sin(teta) * vertexes[i][1] + -cos(teta) * vertexes[i][2] + R;
+		double Xe = -sin(teta) * vertexes[i][0] + cos(teta) * vertexes[i][1];
+		double Ye = -cos(fi) * cos(teta) * vertexes[i][0] + -cos(fi) * sin(teta) * vertexes[i][1] + sin(fi) * vertexes[i][2];
+		double Ze = -sin(fi) * cos(teta) * vertexes[i][0] + -sin(fi) * sin(teta) * vertexes[i][1] + -cos(fi) * vertexes[i][2] + R;
 		trans_vertexes[i][0] = Xe;
 		trans_vertexes[i][1] = Ye;
 		trans_vertexes[i][2] = Ze;
 	}
 }
-
 
 void perspective() {
 	size_t size = vertexes.size();
@@ -160,10 +160,38 @@ void save_param() {
 	fout << "View parameters: " << std::endl;
 	fout << "d = " << d << std::endl;
 	fout << "R = " << R << std::endl;
-	fout << "angle_a = " << angle_a << std::endl;
-	fout << "angle_b = " << angle_b << std::endl;
+	fout << "angle_H = " << angle_H << std::endl;
+	fout << "angle_V = " << angle_V << std::endl;
 	fout << '\n';
 	fout.close();
+}
+
+void parse_vertexes(std::string str) {
+	std::string token;
+	char delim = ' ';
+	size_t pos;
+	vertexes.push_back(std::vector<double>());
+	while ((pos = str.find(delim)) != std::string::npos) {
+		token = str.substr(0, pos);
+		str.erase(0, pos + 1);
+		vertexes[count_v].push_back(strtod(token.c_str(), NULL));
+	}
+	vertexes[count_v].push_back(strtod(str.c_str(), NULL));
+	count_v++;
+}
+
+void parse_faces(std::string str) {
+	std::string token;
+	char delim = ' ';
+	size_t pos;
+	faces.push_back(std::vector<double>());
+	while ((pos = str.find(delim)) != std::string::npos) {
+		token = str.substr(0, pos);
+		str.erase(0, pos + 1);
+		faces[count_f].push_back(strtod(token.c_str(), NULL));
+	}
+	faces[count_f].push_back(strtod(str.c_str(), NULL));
+	count_f++;
 }
 
 void read_file() {
@@ -173,46 +201,30 @@ void read_file() {
 		throw std::runtime_error("Could not open file, check file name or access");
 	}
 	std::string str;
-	char delim = ' ';
-	std::string token;
-	size_t pos;
+	vertexes.clear();
 	faces.clear();
 	while (!fin.eof()) {
 		getline(fin, str);
 		if (str[0] == 'v') {
 			str.erase(0, 2);
-			vertexes.push_back(std::vector<double>());
-			while ((pos = str.find(delim)) != std::string::npos) {
-				token = str.substr(0, pos);
-				str.erase(0, pos + 1);
-				vertexes[count_v].push_back(strtod(token.c_str(), NULL));
-			}
-			vertexes[count_v].push_back(strtod(str.c_str(), NULL));
-			count_v++;
+			parse_vertexes(str);
 		}
-		if (str[0] == 'f') {
+		if (str[0] == 'f') { // аналогично с парсером вершин
 			str.erase(0, 2);
-			faces.push_back(std::vector<double>());
-			while ((pos = str.find(delim)) != std::string::npos) {
-				token = str.substr(0, pos);
-				str.erase(0, pos + 1);
-				faces[count_f].push_back(strtod(token.c_str(), NULL));
-			}
-			faces[count_f].push_back(strtod(str.c_str(), NULL));
-			count_f++;
+			parse_faces(str);
 		}
 	}
 
 	trans_vertexes.resize(vertexes.size());
 	for (int i = 0; i < trans_vertexes.size(); i++) {
-		if (vertexes[i].size() != 3) {
+		if (vertexes[i].size() != 3) { // Если в каком-то из векторов, количество вершин не равно 3, вызываем исключение и сохраняем в logs.txt
 			throw std::invalid_argument("invalid obj file");
 		}
 		trans_vertexes[i].resize(vertexes[i].size());
 	}
 
 	fin.close();
-	save_info();
+	save_info(); // сохраняем информацию о модели: название obj файла модели, количество вершин, количество поверхностей. (info.txt)
 	model_is_exist = true;
 }
 
@@ -331,49 +343,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int wmId = LOWORD(wParam);
 		switch (wmId)
 		{
-		case VK_SPACE:
-			angle_a = copy_a;
-			angle_b = copy_b;
+		case VK_SPACE: // Возврат к исходным параметрам объекта
+			angle_H = copy_H;
+			angle_V = copy_V;
 			R = copy_R;
 			d = copy_d;
 			move_x = copy_x;
 			move_y = move_y;
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
-		case 'F':
-			angle_a = angle_a - 10;
+		case 'A':
+			angle_H = angle_H - 10; // Изменение углов поворота
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case 'D':
-			angle_a = angle_a + 10;
+			angle_H = angle_H + 10;
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
-		case 'C':
-			angle_b = angle_b - 10;
-			InvalidateRect(hWnd, NULL, TRUE);
-			break;
-		case 'V':
-			angle_b = angle_b + 10;
-			InvalidateRect(hWnd, NULL, TRUE);
-			break;
-		case 'A':
-			R = R + 10;
+		case 'W':
+			angle_V = angle_V - 10;
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case 'S':
+			angle_V = angle_V + 10;
+			InvalidateRect(hWnd, NULL, TRUE);
+			break;
+		case 'C':
+			R = R + 10; // Изменения расстояния от точки наблюдения до начала координат
+			InvalidateRect(hWnd, NULL, TRUE);
+			break;
+		case 'V':
 			R = R - 10;
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case 'Z':
-			d = d - 10;
+			d = d - 100; // Изменения расстояния между экраном и точкой наблюдения
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case 'X':
-			d = d + 10;
+			d = d + 100;
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case VK_UP:
-			move_y = move_y - 10;
+			move_y = move_y - 10; // Изменения координат объекта
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case VK_DOWN:
@@ -388,7 +400,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			move_x = move_x + 10;
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
-		case VK_F1:
+		case VK_F1: // Сохранение текущих параметров в файл
 			save_param();
 			break;
 		default:
