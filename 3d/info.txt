@@ -26,3 +26,79 @@ Model name: hamer.obj
 Vertexes: 8822
 Faces: 9176
 
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+
+Model name: cube.obj
+Vertexes: 8
+Faces: 6
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+

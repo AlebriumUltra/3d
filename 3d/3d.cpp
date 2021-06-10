@@ -166,33 +166,31 @@ void save_param() {
 	fout.close();
 }
 
-void parse_vertexes(std::string str) {
+void parser(std::string str, std::vector<std::vector<double>>& vector, bool is_vertex) {
 	std::string token;
 	char delim = ' ';
 	size_t pos;
-	vertexes.push_back(std::vector<double>());
-	while ((pos = str.find(delim)) != std::string::npos) {
-		token = str.substr(0, pos);
-		str.erase(0, pos + 1);
-		vertexes[count_v].push_back(strtod(token.c_str(), NULL));
+	vector.push_back(std::vector<double>());
+	if (is_vertex) {
+		while ((pos = str.find(delim)) != std::string::npos) {
+			token = str.substr(0, pos);
+			str.erase(0, pos + 1);
+			vector[count_v].push_back(strtod(token.c_str(), NULL));
+		}
+		vector[count_v].push_back(strtod(str.c_str(), NULL));
+		count_v++;
 	}
-	vertexes[count_v].push_back(strtod(str.c_str(), NULL));
-	count_v++;
+	else {
+		while ((pos = str.find(delim)) != std::string::npos) {
+			token = str.substr(0, pos);
+			str.erase(0, pos + 1);
+			vector[count_f].push_back(strtod(token.c_str(), NULL));
+		}
+		vector[count_f].push_back(strtod(str.c_str(), NULL));
+		count_f++;
+	}
 }
 
-void parse_faces(std::string str) {
-	std::string token;
-	char delim = ' ';
-	size_t pos;
-	faces.push_back(std::vector<double>());
-	while ((pos = str.find(delim)) != std::string::npos) {
-		token = str.substr(0, pos);
-		str.erase(0, pos + 1);
-		faces[count_f].push_back(strtod(token.c_str(), NULL));
-	}
-	faces[count_f].push_back(strtod(str.c_str(), NULL));
-	count_f++;
-}
 
 void read_file() {
 	std::ifstream fin;
@@ -207,11 +205,11 @@ void read_file() {
 		getline(fin, str);
 		if (str[0] == 'v') {
 			str.erase(0, 2);
-			parse_vertexes(str);
+			parser(str, vertexes, TRUE);
 		}
 		if (str[0] == 'f') { // аналогично с парсером вершин
 			str.erase(0, 2);
-			parse_faces(str);
+			parser(str, faces, FALSE);
 		}
 	}
 
