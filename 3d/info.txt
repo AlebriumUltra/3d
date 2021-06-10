@@ -1,0 +1,28 @@
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+
+Model name: hamer.obj
+Vertexes: 8822
+Faces: 9176
+

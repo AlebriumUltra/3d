@@ -82,7 +82,7 @@ std::vector<std::vector<double>>faces;
 float d = 1500;
 float angle_H = 30;
 float angle_V = 30;
-float R = -200;
+float R = 200;
 
 float copy_d = d;
 float copy_H = angle_H;
